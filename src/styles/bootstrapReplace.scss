@@ -1,0 +1,38 @@
+//use é mais moderno que import (deve ser utilizado preferencialmente)
+@use "./colors.scss" as sismanColors;
+
+// Required
+@import "../../node_modules/bootstrap/scss/functions";
+
+// //Customizing dropdown
+$dropdown-link-hover-color:         white;
+$dropdown-link-hover-bg:           sismanColors.$primaryColor;
+$dropdown-link-color:              black;
+
+// Customizing colors
+$info: sismanColors.$primaryColor;
+$primary: sismanColors.$primaryDarkColor;
+$success: #1D4E00;
+$warning: #FFCC00;
+$danger: #9A1400;
+
+
+
+$dropdown-link-active-bg:          sismanColors.$primaryDarkColor;
+
+
+//Customizing tables
+// $table-hover-color:           sismanColors.$body2Color;
+$table-hover-bg-factor:       .4;
+$table-hover-bg:              rgba(#f2faff, 1);
+// $table-bg:              rgba(#f2faff, $table-hover-bg-factor);
+
+
+/* import bootstrap to set changes */
+@import "../../node_modules/bootstrap/scss/bootstrap";
+
+body {
+
+  background-color: #ffffff;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' viewBox='0 0 4 4'%3E%3Cpath fill='%23dee9ff' fill-opacity='0.65' d='M1 3h1v1H1V3zm2-2h1v1H3V1z'%3E%3C/path%3E%3C/svg%3E");
+}
