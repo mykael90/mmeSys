@@ -4,7 +4,7 @@ import { Container, Button } from 'react-bootstrap';
 
 import RoutesPages from './routes';
 import './App.scss';
-import Header from './components/shareds/Header';
+import Header from './components/partials/Header';
 
 const App = () => (
   <>
