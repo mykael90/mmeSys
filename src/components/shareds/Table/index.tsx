@@ -1,26 +1,22 @@
-import React, { useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   useTable,
   useSortBy,
   useFilters,
   useGlobalFilter,
-  useAsyncDebounce,
   useFlexLayout,
   useResizeColumns,
   useExpanded,
   usePagination,
+  Column,
+  TableState,
+  useAsyncDebounce,
 } from 'react-table';
 import { Form, Table, Row, Col, Button, Badge } from 'react-bootstrap';
-import { FaFilter, FaSortAlphaDown, FaSortAlphaUp, FaSort } from 'react-icons/fa';
 import styled from 'styled-components';
+import { FaFilter } from 'react-icons/fa';
 
-const Styles = styled.div`
-  table {
-    table {
-      background-color: #fff;
-    }
-  }
-`;
+import SortBy from './components/SortBy';
 
 export function GlobalFilter({
   preGlobalFilteredRows,
@@ -28,14 +24,13 @@ export function GlobalFilter({
   setGlobalFilter,
   globalFilteredRows,
   toggleAllRowsExpanded,
-}) {
-  const inputRef = useRef();
+}: any) {
   const count = preGlobalFilteredRows.length;
   const countFiltered = globalFilteredRows.length;
-  const [value, setValue] = React.useState(globalFilter);
+  const [value, setValue] = useState(globalFilter);
   // eslint-disable-next-line no-shadow
-  const onChange = useAsyncDebounce((value) => {
-    setGlobalFilter(value || undefined);
+  const onChange = useAsyncDebounce((valueNew) => {
+    setGlobalFilter(valueNew || undefined);
   }, 200);
 
   return (
@@ -58,7 +53,6 @@ export function GlobalFilter({
             className="border-0"
             autoComplete="off"
             autoFocus
-            ref={inputRef}
           />
         </Form.Group>
       </Row>
@@ -73,71 +67,38 @@ export function GlobalFilter({
   );
 }
 
-function SortBy({ column: { isSorted, isSortedDesc, toggleSortBy } }) {
-  return (
-    <Col xs="auto" className="pe-0">
-      <span>
-        {' '}
-        {isSorted ? (
-          isSortedDesc ? (
-            <Button
-              title="Ordenado decrescente"
-              size="sm"
-              variant="outline-primary"
-              className="border-0"
-              onClick={() => toggleSortBy(!isSortedDesc)}
-            >
-              <FaSortAlphaUp />
-            </Button>
-          ) : (
-            <Button
-              title="Ordenado crescente"
-              size="sm"
-              variant="outline-primary"
-              className="border-0 "
-              onClick={() => toggleSortBy(!isSortedDesc)}
-            >
-              <FaSortAlphaDown />
-            </Button>
-          )
-        ) : (
-          <Button
-            title="Clique para ordenar"
-            size="sm"
-            variant="outline-primary"
-            className="border-0 "
-            onClick={() => toggleSortBy(false)}
-          >
-            <FaSort />
-          </Button>
-        )}
-      </span>
-    </Col>
-  );
-}
+const Styles = styled.div`
+  table {
+    table {
+      background-color: #fff;
+    }
+  }
+`;
 
 type PropsType = {
-  columns: Array<any>;
+  columns: Array<Column>;
   data: Array<any>;
-  defaultColumn: Object;
-  filterTypes: Object;
-  initialState: Object;
-  renderRowSubComponent: React.ReactNode;
-  updateMyData: Function;
-  updateMyDataDatabase: Function;
-  skipPageReset: Function;
+  defaultColumn?: Partial<Column> | undefined;
+  filterTypes?: any;
+  initialState?: Partial<TableState> | undefined;
+  renderRowSubComponent?: CallableFunction | undefined;
+  updateMyData?: CallableFunction | undefined;
+  updateMyDataDatabase?: CallableFunction | undefined;
+  skipPageReset?: CallableFunction | undefined;
+  doGlobalFilter?: boolean;
 };
 
-export default function TableGfilterNestedRowHiddenRows({
+export default function ReactTabble({
   columns,
   data,
-  defaultColumn,
-  filterTypes,
-  initialState,
+  defaultColumn = undefined,
+  filterTypes = undefined,
+  initialState = undefined,
   renderRowSubComponent,
-  updateMyData,
-  updateMyDataDatabase,
-  skipPageReset,
+  updateMyData = undefined,
+  updateMyDataDatabase = undefined,
+  skipPageReset = undefined,
+  doGlobalFilter = false,
 }: PropsType) {
   const {
     getTableProps,
@@ -162,7 +123,7 @@ export default function TableGfilterNestedRowHiddenRows({
     setGlobalFilter,
     globalFilteredRows,
     toggleAllRowsExpanded,
-  } = useTable(
+  } = useTable<any>(
     {
       columns,
       data,
@@ -181,7 +142,7 @@ export default function TableGfilterNestedRowHiddenRows({
       // cell renderer!
       updateMyData,
       updateMyDataDatabase,
-    },
+    } as any, // depois pode ver o que melhor se encaixa aqui
     useFilters,
     useGlobalFilter,
     useSortBy,
@@ -189,28 +150,30 @@ export default function TableGfilterNestedRowHiddenRows({
     useResizeColumns,
     useExpanded,
     usePagination,
-  );
+  ) as any; // aqui depois posso tentar uma concatenação
 
   return (
     <Styles>
-      <Row className="justify-content-center">
-        <Col xs={10} sm={8} md={6} className="bg-light py-3 px-3 border rounded">
-          <GlobalFilter
-            preGlobalFilteredRows={preGlobalFilteredRows}
-            globalFilter={state.globalFilter}
-            setGlobalFilter={setGlobalFilter}
-            globalFilteredRows={globalFilteredRows}
-            toggleAllRowsExpanded={toggleAllRowsExpanded}
-          />
-        </Col>
-      </Row>
+      {doGlobalFilter ? (
+        <Row className="justify-content-center">
+          <Col xs={10} sm={8} md={6} className="bg-light py-3 px-3 border rounded">
+            <GlobalFilter
+              preGlobalFilteredRows={preGlobalFilteredRows}
+              globalFilter={state.globalFilter}
+              setGlobalFilter={setGlobalFilter}
+              globalFilteredRows={globalFilteredRows}
+              toggleAllRowsExpanded={toggleAllRowsExpanded}
+            />
+          </Col>
+        </Row>
+      ) : null}
 
       <Row className="py-3">
         <Table striped bordered size="sm" {...getTableProps()} responsive="md">
           <thead>
-            {headerGroups.map((headerGroup) => (
+            {headerGroups.map((headerGroup: any) => (
               <tr {...headerGroup.getHeaderGroupProps()}>
-                {headerGroup.headers.map((column) => (
+                {headerGroup.headers.map((column: any) => (
                   <th className="text-center align-middle" {...column.getHeaderProps()}>
                     {column.render('Header')}
                     <Row className="text-center">
@@ -223,12 +186,12 @@ export default function TableGfilterNestedRowHiddenRows({
             ))}
           </thead>
           <tbody {...getTableBodyProps()}>
-            {page.map((row) => {
+            {page.map((row: any) => {
               prepareRow(row);
               return (
                 <>
                   <tr {...row.getRowProps()}>
-                    {row.cells.map((cell) => (
+                    {row.cells.map((cell: any) => (
                       <td
                         className={`text-center py-3 ${
                           row.isExpanded ? 'bg-info text-white' : 'fw-normal'
@@ -279,8 +242,6 @@ export default function TableGfilterNestedRowHiddenRows({
         <Col xs="12" sm="auto" className="d-flex py-1">
           <div>
             <Button
-              as={Col}
-              xs="auto"
               variant="dark"
               onClick={() => gotoPage(0)}
               disabled={!canPreviousPage}
@@ -289,8 +250,6 @@ export default function TableGfilterNestedRowHiddenRows({
               {'<<'}
             </Button>{' '}
             <Button
-              as={Col}
-              xs="auto"
               variant="dark"
               onClick={() => previousPage()}
               disabled={!canPreviousPage}
@@ -299,8 +258,6 @@ export default function TableGfilterNestedRowHiddenRows({
               {'<'}
             </Button>{' '}
             <Button
-              as={Col}
-              xs="auto"
               variant="dark"
               onClick={() => nextPage()}
               disabled={!canNextPage}
@@ -309,8 +266,6 @@ export default function TableGfilterNestedRowHiddenRows({
               {'>'}
             </Button>{' '}
             <Button
-              as={Col}
-              xs="auto"
               variant="dark"
               onClick={() => gotoPage(pageCount - 1)}
               disabled={!canNextPage}
@@ -337,8 +292,8 @@ export default function TableGfilterNestedRowHiddenRows({
               type="number"
               defaultValue={state.pageIndex + 1}
               onChange={(e) => {
-                const page = e.target.value ? Number(e.target.value) - 1 : 0;
-                gotoPage(page);
+                const pageNumber = e.target.value ? Number(e.target.value) - 1 : 0;
+                gotoPage(pageNumber);
               }}
               style={{ width: '60px' }}
               className="text-center"

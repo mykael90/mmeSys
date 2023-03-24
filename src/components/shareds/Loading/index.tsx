@@ -3,7 +3,7 @@ import Spinner from 'react-bootstrap/Spinner';
 import Container from 'react-bootstrap/Container';
 
 type PropsType = {
-  isLoading: boolean;
+  isLoading?: boolean;
   title?: string;
 };
 
